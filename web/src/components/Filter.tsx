@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Select, Button, Tag, Space, DatePicker, Popover } from 'antd';
 import moment from 'moment';
 
@@ -16,23 +16,17 @@ const typeOptions = ['Research', 'Customer', 'Sales'];
 const customerOptions = ['Ramp', 'Brex', 'Vanta', 'Notion', 'Linear', 'OpenAI', 'Loom'];
 
 interface FilterProps {
+  filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
   onClearFilters: () => void;
 }
 
-const Filter: React.FC<FilterProps> = ({ onFilterChange, onClearFilters }) => {
-  const [filters, setFilters] = useState<FilterState>({
-    importance: [],
-    type: [],
-    customer: [],
-    date: null,
-  });
-  const [isPopoverVisible, setIsPopoverVisible] = useState(false);
+const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters }) => {
+  const [isPopoverVisible, setIsPopoverVisible] = React.useState(false);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleFilterChange = (filterType: keyof FilterState, value: any) => {
     const newFilters = { ...filters, [filterType]: value };
-    setFilters(newFilters);
     onFilterChange(newFilters);
   };
 
@@ -46,14 +40,6 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClearFilters }) => {
   };
 
   const handleClearFilters = () => {
-    const clearedFilters = {
-      importance: [],
-      type: [],
-      customer: [],
-      date: null,
-    };
-    setFilters(clearedFilters);
-    onFilterChange(clearedFilters);
     onClearFilters();
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { NavTabs, TabConfig } from "./components/NavTabs";
 import { Feedback } from "./Feedback";
 import { Groups } from "./Groups";
@@ -21,16 +21,37 @@ const App: React.FC = () => {
     customer: [],
     date: null,
   });
+  const [filterKey, setFilterKey] = useState(0);
 
-  const handleFilterChange = (newFilters: FilterState) => {
+  const handleFilterChange = useCallback((newFilters: FilterState) => {
     setFilters(newFilters);
-  };
+    setFilterKey(prevKey => prevKey + 1);
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setFilters({
+      importance: [],
+      type: [],
+      customer: [],
+      date: null,
+    });
+    setFilterKey(prevKey => prevKey + 1);
+  }, []);
+
+  useEffect(() => {
+    // This effect will run whenever filters change
+    console.log("Filters changed:", filters);
+  }, [filters]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="w-screen h-screen flex flex-col p-4">
         <div className="mb-4">
-          <Filter onFilterChange={handleFilterChange} />
+          <Filter 
+            filters={filters} 
+            onFilterChange={handleFilterChange} 
+            onClearFilters={handleClearFilters} 
+          />
         </div>
         <div className="flex-grow flex flex-col">
           <NavTabs
@@ -43,9 +64,9 @@ const App: React.FC = () => {
           />
           <div className="flex-grow mt-4">
             {selectedTab === "feedback" ? (
-              <Feedback filters={filters} />
+              <Feedback key={filterKey} filters={filters} />
             ) : (
-              <Groups filters={filters} />
+              <Groups key={filterKey} filters={filters} />
             )}
           </div>
         </div>
