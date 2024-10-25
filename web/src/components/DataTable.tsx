@@ -38,7 +38,7 @@ export function DataTable<T extends Record<string, any>>({
               {schema.map((column, columnIndex) => (
                 <td
                   key={columnIndex}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  className="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300"
                 >
                   {column.cellRenderer(row)}
                 </td>

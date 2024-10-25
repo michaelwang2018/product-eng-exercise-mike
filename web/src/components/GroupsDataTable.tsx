@@ -1,3 +1,4 @@
+import React from 'react';
 import cx from "classnames";
 import { GroupSummary, FeedbackData } from "../hooks";
 import { DataTable } from "./DataTable";
@@ -45,7 +46,7 @@ export function GroupsDataTable({ data, allFeedback, onGroupSelect, selectedGrou
           </div>
         ))}
       </div>
-      <div className="bg-dusty-white dark:bg-gray-700 w-full flex-1 p-4">
+      <div className="bg-white dark:bg-gray-700 w-full flex-1 p-4">
         <DataTable
           fullWidth
           data={groupFeedback

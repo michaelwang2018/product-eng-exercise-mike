@@ -31,14 +31,11 @@ export function NavTabs({
           onClick={() => onTabClicked(tabId)}
           className={cx(
             selectedTab === tabId
-              ? isDarkMode
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700"
-              : isDarkMode
-              ? "text-gray-300 hover:text-white"
+              ? "bg-blue-600 text-white"
               : "text-gray-500 hover:text-gray-700",
-            "px-3 py-2 font-medium text-sm rounded-md transition-colors duration-150 ease-in-out",
-            isDarkMode && "dark:hover:bg-gray-700"
+            "px-3 py-2 font-medium text-sm rounded-md",
+            isDarkMode && "dark:text-gray-300 dark:hover:text-white",
+            selectedTab === tabId && isDarkMode && "dark:bg-blue-700"
           )}
         >
           {config[tabId].name}
