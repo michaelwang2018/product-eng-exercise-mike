@@ -19,9 +19,10 @@ interface FilterProps {
   filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
   onClearFilters: () => void;
+  isDarkMode: boolean;
 }
 
-const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters }) => {
+const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters, isDarkMode }) => {
   const [isPopoverVisible, setIsPopoverVisible] = React.useState(false);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -44,13 +45,14 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
   };
 
   const content = (
-    <Space direction="vertical" style={{ width: '250px' }}>
+    <Space direction="vertical" style={{ width: '250px' }} className={`p-4 rounded ${isDarkMode ? 'dark' : ''}`}>
       <Select
         style={{ width: '100%' }}
         placeholder="Select Importance"
         mode="multiple"
         value={filters.importance}
         onChange={(value) => handleFilterChange('importance', value)}
+        className={isDarkMode ? 'dark-select' : ''}
       >
         {importanceOptions.map(option => (
           <Option key={option} value={option}>{option}</Option>
@@ -62,6 +64,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
         mode="multiple"
         value={filters.type}
         onChange={(value) => handleFilterChange('type', value)}
+        className={isDarkMode ? 'dark-select' : ''}
       >
         {typeOptions.map(option => (
           <Option key={option} value={option}>{option}</Option>
@@ -73,6 +76,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
         mode="multiple"
         value={filters.customer}
         onChange={(value) => handleFilterChange('customer', value)}
+        className={isDarkMode ? 'dark-select' : ''}
       >
         {customerOptions.map(option => (
           <Option key={option} value={option}>{option}</Option>
@@ -83,6 +87,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
         format="MM/DD/YYYY"
         value={filters.date ? moment(filters.date) : null}
         onChange={(date, dateString) => handleFilterChange('date', dateString)}
+        className={isDarkMode ? 'dark-picker' : ''}
       />
     </Space>
   );
@@ -92,26 +97,37 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
       <div className="flex items-center flex-wrap gap-2">
         <Popover
           content={content}
-          title="Filter Options"
+          title={<span>Filter Options</span>}
           trigger="click"
           visible={isPopoverVisible}
           onVisibleChange={setIsPopoverVisible}
           getPopupContainer={() => filterButtonRef.current || document.body}
+          overlayClassName={isDarkMode ? 'dark-popover' : ''}
         >
-          <Button ref={filterButtonRef} className="dark:bg-gray-700 dark:text-white">
+          <Button ref={filterButtonRef}>
             Filter
           </Button>
         </Popover>
         {Object.entries(filters).map(([key, value]) => {
           if (Array.isArray(value) && value.length > 0) {
             return value.map((v) => (
-              <Tag key={`${key}-${v}`} closable onClose={() => handleRemoveFilter(key as keyof FilterState, v)} className="dark:bg-gray-600 dark:text-white">
+              <Tag 
+                key={`${key}-${v}`} 
+                closable 
+                onClose={() => handleRemoveFilter(key as keyof FilterState, v)}
+                className={isDarkMode ? 'dark-tag' : ''}
+              >
                 {`${key}: ${v}`}
               </Tag>
             ));
           } else if (key === 'date' && value) {
             return (
-              <Tag key={key} closable onClose={handleRemoveDate} className="dark:bg-gray-600 dark:text-white">
+              <Tag 
+                key={key} 
+                closable 
+                onClose={handleRemoveDate}
+                className={isDarkMode ? 'dark-tag' : ''}
+              >
                 {`${key}: ${value}`}
               </Tag>
             );
@@ -119,7 +135,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
           return null;
         })}
       </div>
-      <Button onClick={handleClearFilters} className="dark:bg-gray-700 dark:text-white">Clear</Button>
+      <Button onClick={handleClearFilters}>Clear</Button>
     </div>
   );
 };

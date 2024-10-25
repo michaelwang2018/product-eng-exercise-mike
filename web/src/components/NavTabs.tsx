@@ -1,41 +1,49 @@
+import React from "react";
 import cx from "classnames";
 
-export type TabConfig = Record<string, { id: string; name: string }>;
+export interface TabConfig {
+  [key: string]: {
+    id: string;
+    name: string;
+  };
+}
 
-export type Props = {
+interface NavTabsProps {
   config: TabConfig;
   tabOrder: string[];
   selectedTab: string;
   onTabClicked: (tabId: string) => void;
-};
+  isDarkMode: boolean;
+}
 
 export function NavTabs({
   config,
   tabOrder,
   selectedTab,
   onTabClicked,
-}: Props) {
+  isDarkMode,
+}: NavTabsProps) {
   return (
-    <div className="flex">
-      {tabOrder
-        .map((tabKey) => config[tabKey])
-        .map((config) => (
-          <div
-            key={`inbox-tab-${config.name}`}
-            className={cx(
-              "text-gray-text flex items-center px-6 py-2 text-sm hover:cursor-default",
-              {
-                "border-primary-main text-primary-main border-b-2 font-semibold":
-                  selectedTab === config.id,
-                "hover:bg-dusty-white border-b-2 font-medium":
-                  selectedTab !== config.id,
-              }
-            )}
-            onMouseDown={() => onTabClicked(config.id)}
-          >
-            {config.name}
-          </div>
-        ))}
-    </div>
+    <nav className="flex space-x-4" aria-label="Tabs">
+      {tabOrder.map((tabId) => (
+        <button
+          key={tabId}
+          onClick={() => onTabClicked(tabId)}
+          className={cx(
+            selectedTab === tabId
+              ? isDarkMode
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700"
+              : isDarkMode
+              ? "text-gray-300 hover:text-white"
+              : "text-gray-500 hover:text-gray-700",
+            "px-3 py-2 font-medium text-sm rounded-md transition-colors duration-150 ease-in-out",
+            isDarkMode && "dark:hover:bg-gray-700"
+          )}
+        >
+          {config[tabId].name}
+        </button>
+      ))}
+    </nav>
   );
 }

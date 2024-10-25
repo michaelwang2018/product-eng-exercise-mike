@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Dark mode styles for Ant Design components */
+.dark .ant-select-dropdown,
+.dark .ant-picker-dropdown,
+.dark .ant-popover-inner {
+  background-color: #1f1f1f !important;
+}
+
+.dark .ant-select-item-option-content,
+.dark .ant-picker-cell-inner,
+.dark .ant-picker-header button,
+.dark .ant-picker-header,
+.dark .ant-select-selection-item,
+.dark .ant-select-selection-placeholder,
+.dark .ant-picker-input > input {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.dark .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #177ddc !important;
+  color: #ffffff !important;
+}
+
+.dark .ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #177ddc !important;
+}
+
+.dark .ant-select-selector,
+.dark .ant-picker {
+  background-color: #141414 !important;
+  border-color: #434343 !important;
+}
+
+.dark .ant-select-arrow,
+.dark .ant-picker-suffix {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
