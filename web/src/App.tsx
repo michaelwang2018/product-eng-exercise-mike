@@ -3,6 +3,7 @@ import { NavTabs, TabConfig } from "./components/NavTabs";
 import { Feedback } from "./Feedback";
 import { Groups } from "./Groups";
 import Filter from './components/Filter';
+import Header from './components/Header';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { FilterState } from "./hooks";
 
@@ -22,6 +23,7 @@ const App: React.FC = () => {
     date: null,
   });
   const [filterKey, setFilterKey] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const handleFilterChange = useCallback((newFilters: FilterState) => {
     setFilters(newFilters);
@@ -38,21 +40,30 @@ const App: React.FC = () => {
     setFilterKey(prevKey => prevKey + 1);
   }, []);
 
+  const toggleDarkMode = useCallback(() => {
+    setIsDarkMode(prevMode => !prevMode);
+  }, []);
+
   useEffect(() => {
-    console.log("Filters changed:", filters);
-  }, [filters]);
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="w-screen h-screen flex flex-col p-4">
-        <div className="mb-4">
-          <Filter 
-            filters={filters} 
-            onFilterChange={handleFilterChange} 
-            onClearFilters={handleClearFilters} 
-          />
-        </div>
-        <div className="flex-grow flex flex-col">
+      <div className={`w-screen h-screen flex flex-col ${isDarkMode ? 'dark' : ''} bg-white dark:bg-gray-800 text-black dark:text-white`}>
+        <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+        <div className="flex-grow flex flex-col p-4">
+          <div className="mb-4">
+            <Filter 
+              filters={filters} 
+              onFilterChange={handleFilterChange} 
+              onClearFilters={handleClearFilters} 
+            />
+          </div>
           <NavTabs
             config={TabsConfig}
             tabOrder={["feedback", "groups"]}

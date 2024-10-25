@@ -36,8 +36,8 @@ export function GroupsDataTable({ data, allFeedback, onGroupSelect, selectedGrou
             key={`grouped-feedback-${group.id}`}
             onClick={() => handleGroupClick(group.id)}
             className={cx("border-b px-6 py-4 hover:cursor-pointer", {
-              "bg-primary-action-light": selectedGroupId === group.id,
-              "hover:bg-hover-gray": selectedGroupId !== group.id,
+              "bg-primary-action-light dark:bg-gray-600": selectedGroupId === group.id,
+              "hover:bg-hover-gray dark:hover:bg-gray-700": selectedGroupId !== group.id,
             })}
           >
             <div className="mb-2 text-base font-semibold">{group.title}</div>
@@ -45,7 +45,7 @@ export function GroupsDataTable({ data, allFeedback, onGroupSelect, selectedGrou
           </div>
         ))}
       </div>
-      <div className="bg-dusty-white w-full flex-1 p-4">
+      <div className="bg-dusty-white dark:bg-gray-700 w-full flex-1 p-4">
         <DataTable
           fullWidth
           data={groupFeedback

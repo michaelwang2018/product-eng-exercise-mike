@@ -88,8 +88,8 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
   );
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+    <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center flex-wrap gap-2">
         <Popover
           content={content}
           title="Filter Options"
@@ -98,20 +98,20 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
           onVisibleChange={setIsPopoverVisible}
           getPopupContainer={() => filterButtonRef.current || document.body}
         >
-          <Button ref={filterButtonRef}>
+          <Button ref={filterButtonRef} className="dark:bg-gray-700 dark:text-white">
             Filter
           </Button>
         </Popover>
         {Object.entries(filters).map(([key, value]) => {
           if (Array.isArray(value) && value.length > 0) {
             return value.map((v) => (
-              <Tag key={`${key}-${v}`} closable onClose={() => handleRemoveFilter(key as keyof FilterState, v)}>
+              <Tag key={`${key}-${v}`} closable onClose={() => handleRemoveFilter(key as keyof FilterState, v)} className="dark:bg-gray-600 dark:text-white">
                 {`${key}: ${v}`}
               </Tag>
             ));
           } else if (key === 'date' && value) {
             return (
-              <Tag key={key} closable onClose={handleRemoveDate}>
+              <Tag key={key} closable onClose={handleRemoveDate} className="dark:bg-gray-600 dark:text-white">
                 {`${key}: ${value}`}
               </Tag>
             );
@@ -119,7 +119,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, onClearFilters
           return null;
         })}
       </div>
-      <Button onClick={handleClearFilters}>Clear</Button>
+      <Button onClick={handleClearFilters} className="dark:bg-gray-700 dark:text-white">Clear</Button>
     </div>
   );
 };
