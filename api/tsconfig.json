@@ -29,7 +29,7 @@
       }
     ]
   },
-  "include": ["src/*.ts", "src/data.json"],
+  "include": ["src/*.ts", "src/data.json", "src/groupSummaries.json"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   }

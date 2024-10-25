@@ -1,19 +1,17 @@
 import { GroupsDataTable } from "./components/GroupsDataTable";
-import { useGroupsQuery } from "./hooks";
+import { useGroupsQuery, useFeedbackQuery, FilterState } from "./hooks";
 
 type Props = {
-  filters?: unknown;
+  filters: FilterState;
 };
 
 export function Groups({ filters }: Props) {
-  const dataReq = useGroupsQuery({
-    _: "Update this object to pass data to the /groups endpoint.",
-    filters,
-  });
+  const groupsReq = useGroupsQuery(filters);
+  const feedbackReq = useFeedbackQuery(filters);
 
-  if (dataReq.isLoading || !dataReq.data) {
+  if (groupsReq.isLoading || feedbackReq.isLoading || !groupsReq.data || !feedbackReq.data) {
     return <div>Loading...</div>;
   }
 
-  return <GroupsDataTable data={dataReq.data.data} />;
+  return <GroupsDataTable data={groupsReq.data.data} allFeedback={feedbackReq.data.data} />;
 }

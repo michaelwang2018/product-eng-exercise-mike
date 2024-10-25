@@ -17,9 +17,10 @@ const customerOptions = ['Ramp', 'Brex', 'Vanta', 'Notion', 'Linear', 'OpenAI', 
 
 interface FilterProps {
   onFilterChange: (filters: FilterState) => void;
+  onClearFilters: () => void;
 }
 
-const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
+const Filter: React.FC<FilterProps> = ({ onFilterChange, onClearFilters }) => {
   const [filters, setFilters] = useState<FilterState>({
     importance: [],
     type: [],
@@ -53,6 +54,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     };
     setFilters(clearedFilters);
     onFilterChange(clearedFilters);
+    onClearFilters();
   };
 
   const content = (

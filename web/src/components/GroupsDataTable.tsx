@@ -1,6 +1,6 @@
 import cx from "classnames";
-import { useState } from "react";
-import { FeedbackGroup } from "../hooks";
+import { useState, useMemo } from "react";
+import { GroupSummary, FeedbackData } from "../hooks";
 import { DataTable } from "./DataTable";
 
 const importanceValue = {
@@ -9,47 +9,60 @@ const importanceValue = {
   Low: 0,
 } as const;
 
-export function GroupsDataTable({ data }: { data: FeedbackGroup[] }) {
+interface GroupsDataTableProps {
+  data: GroupSummary[];
+  allFeedback: FeedbackData;
+}
+
+export function GroupsDataTable({ data, allFeedback }: GroupsDataTableProps) {
   const [selectedGroupIndex, setSelectedGroupIndex] = useState(0);
 
+  const groupFeedback = useMemo(() => {
+    const selectedGroup = data[selectedGroupIndex];
+    return allFeedback.filter(feedback => selectedGroup.feedbackIds.includes(feedback.id));
+  }, [selectedGroupIndex, data, allFeedback]);
+
+  const handleGroupClick = (index: number) => {
+    setSelectedGroupIndex(index);
+  };
+
   return (
-    <div className=" hide-scroll-bar flex h-full w-full align-top">
+    <div className="hide-scroll-bar flex h-full w-full align-top">
       <div
-        className="hide-scroll-bar h-full overflow-y-auto "
+        className="hide-scroll-bar h-full overflow-y-auto"
         style={{ width: 500 }}
       >
         {data.map((group, index) => (
           <div
             key={`grouped-feedback-${index}`}
-            onMouseDown={() => setSelectedGroupIndex(index)}
-            className={cx(" border-b px-6 py-4 hover:cursor-default", {
+            onClick={() => handleGroupClick(index)}
+            className={cx("border-b px-6 py-4 hover:cursor-pointer", {
               "bg-primary-action-light": selectedGroupIndex === index,
               "hover:bg-hover-gray": selectedGroupIndex !== index,
             })}
           >
-            <div className="mb-2 text-base font-semibold">{group.name}</div>
+            <div className="mb-2 text-base font-semibold">{group.title}</div>
+            <div className="text-sm">{group.body}</div>
           </div>
         ))}
       </div>
       <div className="bg-dusty-white w-full flex-1 p-4">
         <DataTable
           fullWidth
-          data={(data[selectedGroupIndex]?.feedback ?? [])
+          data={groupFeedback
             .sort(
               (a, b) =>
                 importanceValue[b.importance] - importanceValue[a.importance]
             )
-            .map((feedback) => {
-              return {
-                id: feedback.id,
-                name: feedback.name,
-                description: feedback.description,
-                importance: feedback.importance,
-                customerName: feedback.customer,
-                date: feedback.date,
-                type: feedback.type,
-              };
-            })}
+            .map((feedback) => ({
+              id: feedback.id,
+              name: feedback.name,
+              description: feedback.description,
+              importance: feedback.importance,
+              customerName: feedback.customer,
+              date: feedback.date,
+              type: feedback.type,
+            }))}
           schema={[
             {
               headerName: "Description",

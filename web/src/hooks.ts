@@ -17,6 +17,13 @@ export interface FilterState {
   date: string | null;
 }
 
+export type GroupSummary = {
+  id: string;
+  title: string;
+  body: string;
+  feedbackIds: number[];
+};
+
 export function useFeedbackQuery(filters: FilterState) {
   return useQuery({
     queryKey: ["feedback", filters],
@@ -38,21 +45,46 @@ export function useFeedbackQuery(filters: FilterState) {
   });
 }
 
-export function useGroupsQuery(query: unknown) {
-  return useQuery<{ data: FeedbackGroup[] }>({
+export function useGroupsQuery(filters: FilterState) {
+  return useQuery({
+    queryKey: ["groups", filters],
     queryFn: async () => {
-      const res = await fetch("http://localhost:5001/groups", {
+      const response = await fetch("http://localhost:5002/groups", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query }),
-        method: "POST",
+        body: JSON.stringify({ filters }),
       });
 
-      return res.json();
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      return response.json() as Promise<{ data: GroupSummary[] }>;
     },
-    // The query key is used to cache responses and should represent
-    // the parameters of the query.
-    queryKey: ["groups-data"],
+  });
+}
+
+export function useGroupFeedbackQuery(groupId: string | null, filters: FilterState) {
+  return useQuery({
+    queryKey: ["groupFeedback", groupId, filters],
+    queryFn: async () => {
+      if (!groupId) return { data: [] };
+      const response = await fetch("http://localhost:5002/group-feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ groupId, filters }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      return response.json() as Promise<{ data: FeedbackData }>;
+    },
+    enabled: !!groupId,
   });
 }

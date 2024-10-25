@@ -4,6 +4,7 @@ import { Feedback } from "./Feedback";
 import { Groups } from "./Groups";
 import Filter from './components/Filter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { FilterState } from "./hooks";
 
 const queryClient = new QueryClient()
 
@@ -14,9 +15,14 @@ const TabsConfig: TabConfig = {
 
 const App: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState("feedback");
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState<FilterState>({
+    importance: [],
+    type: [],
+    customer: [],
+    date: null,
+  });
 
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 

@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import express, { Request, Response } from "express";
 import json from "./data.json";
+import groupSummaries from "./groupSummaries.json";
 
 type Feedback = {
   id: number;
@@ -13,6 +14,13 @@ type Feedback = {
 };
 
 type FeedbackData = Feedback[];
+
+type GroupSummary = {
+  id: string;
+  title: string;
+  body: string;
+  feedbackIds: number[];
+};
 
 interface FilterState {
   importance: string[];
@@ -57,38 +65,37 @@ function queryHandler(req: Request, res: Response<{ data: FeedbackData }>) {
   res.status(200).json({ data: filteredFeedback });
 }
 
-type FeedbackGroup = {
-  name: string;
-  feedback: Feedback[];
-};
-
-async function groupHandler(
+function groupHandler(
   req: Request,
-  res: Response<{ data: FeedbackGroup[] }>
+  res: Response<{ data: GroupSummary[] }>
 ) {
-  const body = req;
+  const { filters } = req.body as { filters: FilterState };
 
-  /**
-   * TODO(part-2): Implement filtering + grouping
-   */
+  let filteredFeedback = feedback;
 
-  const pythonRes = await fetch("http://127.0.0.1:8000/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({ feedback }),
-  });
+  if (filters.importance && filters.importance.length > 0) {
+    filteredFeedback = filteredFeedback.filter(item => filters.importance.includes(item.importance));
+  }
 
-  const pythonData = (await pythonRes.json()) as { feedback: Feedback[] };
+  if (filters.type && filters.type.length > 0) {
+    filteredFeedback = filteredFeedback.filter(item => filters.type.includes(item.type));
+  }
 
-  res.status(200).json({
-    data: [
-      {
-        name: "All feedback",
-        feedback: pythonData.feedback,
-      },
-    ],
-  });
+  if (filters.customer && filters.customer.length > 0) {
+    filteredFeedback = filteredFeedback.filter(item => filters.customer.includes(item.customer));
+  }
+
+  if (filters.date) {
+    const filterDate = new Date(filters.date);
+    filteredFeedback = filteredFeedback.filter(item => {
+      const itemDate = new Date(item.date);
+      return itemDate.toDateString() === filterDate.toDateString();
+    });
+  }
+
+  const filteredGroupSummaries = groupSummaries.filter(group => 
+    group.feedbackIds.some(id => filteredFeedback.some(feedback => feedback.id === id))
+  );
+
+  res.status(200).json({ data: filteredGroupSummaries });
 }
