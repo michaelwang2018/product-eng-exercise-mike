@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-type Feedback = {
+export type FeedbackData = {
   id: number;
   name: string;
   description: string;
@@ -8,31 +8,33 @@ type Feedback = {
   type: "Sales" | "Customer" | "Research";
   customer: "Loom" | "Ramp" | "Brex" | "Vanta" | "Notion" | "Linear" | "OpenAI";
   date: string;
-};
+}[];
 
-export type FeedbackData = Feedback[];
+export interface FilterState {
+  importance: string[];
+  type: string[];
+  customer: string[];
+  date: string | null;
+}
 
-export type FeedbackGroup = {
-  name: string;
-  feedback: Feedback[];
-};
-
-export function useFeedbackQuery(query: unknown) {
-  return useQuery<{ data: FeedbackData }>({
+export function useFeedbackQuery(filters: FilterState) {
+  return useQuery({
+    queryKey: ["feedback", filters],
     queryFn: async () => {
-      const res = await fetch("http://localhost:5001/query", {
+      const response = await fetch("http://localhost:5002/query", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query }),
-        method: "POST",
+        body: JSON.stringify({ filters }),
       });
 
-      return res.json();
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      return response.json() as Promise<{ data: FeedbackData }>;
     },
-    // The query key is used to cache responses and should represent
-    // the parameters of the query.
-    queryKey: ["query-data"],
   });
 }
 

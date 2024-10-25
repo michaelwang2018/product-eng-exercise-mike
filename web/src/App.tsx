@@ -1,43 +1,50 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { NavTabs, TabConfig } from "./components/NavTabs";
 import { Feedback } from "./Feedback";
 import { Groups } from "./Groups";
+import Filter from './components/Filter';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-export const TabsConfig: TabConfig = {
-  feedback: {
-    id: "feedback",
-    name: "Feedback",
-  },
-  groups: {
-    id: "groups",
-    name: "Groups",
-  },
+const queryClient = new QueryClient()
+
+const TabsConfig: TabConfig = {
+  feedback: { id: "feedback", name: "Feedback" },
+  groups: { id: "groups", name: "Groups" },
 };
 
-function App() {
+const App: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState("feedback");
+  const [filters, setFilters] = useState({});
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center">
-      <div className="w-5/6 h-4/5 flex flex-col gap-y-4">
-        <NavTabs
-          config={TabsConfig}
-          tabOrder={["feedback", "groups"]}
-          onTabClicked={(tabId) => {
-            setSelectedTab(tabId);
-          }}
-          selectedTab={selectedTab}
-        />
-        {/**
-         * TODO(part-1): Add filter options
-         */}
-        {selectedTab === "feedback" ? (
-          <Feedback filters={{}} />
-        ) : (
-          <Groups filters={{}} />
-        )}
+    <QueryClientProvider client={queryClient}>
+      <div className="w-screen h-screen flex flex-col p-4">
+        <div className="mb-4">
+          <Filter onFilterChange={handleFilterChange} />
+        </div>
+        <div className="flex-grow flex flex-col">
+          <NavTabs
+            config={TabsConfig}
+            tabOrder={["feedback", "groups"]}
+            onTabClicked={(tabId) => {
+              setSelectedTab(tabId);
+            }}
+            selectedTab={selectedTab}
+          />
+          <div className="flex-grow mt-4">
+            {selectedTab === "feedback" ? (
+              <Feedback filters={filters} />
+            ) : (
+              <Groups filters={filters} />
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </QueryClientProvider>
   );
 }
 

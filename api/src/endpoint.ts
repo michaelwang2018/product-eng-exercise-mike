@@ -14,22 +14,47 @@ type Feedback = {
 
 type FeedbackData = Feedback[];
 
+interface FilterState {
+  importance: string[];
+  type: string[];
+  customer: string[];
+  date: string | null;
+}
+
 export const router = express.Router();
 router.use(bodyParser.json());
 
 router.post("/query", queryHandler);
 router.post("/groups", groupHandler);
 
-const feedback: FeedbackData = json as any;
+const feedback: FeedbackData = json as FeedbackData;
 
 function queryHandler(req: Request, res: Response<{ data: FeedbackData }>) {
-  const body = req;
+  const { filters } = req.body as { filters: FilterState };
 
-  /**
-   * TODO(part-1): Implement query handling
-   */
+  let filteredFeedback = feedback;
 
-  res.status(200).json({ data: feedback });
+  if (filters.importance && filters.importance.length > 0) {
+    filteredFeedback = filteredFeedback.filter(item => filters.importance.includes(item.importance));
+  }
+
+  if (filters.type && filters.type.length > 0) {
+    filteredFeedback = filteredFeedback.filter(item => filters.type.includes(item.type));
+  }
+
+  if (filters.customer && filters.customer.length > 0) {
+    filteredFeedback = filteredFeedback.filter(item => filters.customer.includes(item.customer));
+  }
+
+  if (filters.date) {
+    const filterDate = new Date(filters.date);
+    filteredFeedback = filteredFeedback.filter(item => {
+      const itemDate = new Date(item.date);
+      return itemDate.toDateString() === filterDate.toDateString();
+    });
+  }
+
+  res.status(200).json({ data: filteredFeedback });
 }
 
 type FeedbackGroup = {
