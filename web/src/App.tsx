@@ -39,7 +39,6 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // This effect will run whenever filters change
     console.log("Filters changed:", filters);
   }, [filters]);
 

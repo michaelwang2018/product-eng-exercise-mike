@@ -12,7 +12,7 @@ export function Groups({ filters }: Props) {
   const feedbackReq = useFeedbackQuery(filters, selectedGroupId);
 
   const handleGroupSelect = useCallback((groupId: string) => {
-    setSelectedGroupId(groupId);
+    setSelectedGroupId(prevId => prevId === groupId ? null : groupId);
   }, []);
 
   if (groupsReq.isLoading || feedbackReq.isLoading || !groupsReq.data || !feedbackReq.data) {

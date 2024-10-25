@@ -37,11 +37,15 @@ router.post("/groups", groupHandler);
 
 const feedback: FeedbackData = json as FeedbackData;
 
-function queryHandler(req: Request, res: Response<{ data: FeedbackData }>) {
-  const { filters } = req.body as { filters: FilterState };
+async function queryHandler(
+  req: Request,
+  res: Response<{ data: FeedbackData }>
+) {
+  const { filters, selectedGroupId } = req.body as { filters: FilterState; selectedGroupId: string | null };
 
   let filteredFeedback = feedback;
 
+  // Apply filters
   if (filters.importance && filters.importance.length > 0) {
     filteredFeedback = filteredFeedback.filter(item => filters.importance.includes(item.importance));
   }
@@ -60,6 +64,14 @@ function queryHandler(req: Request, res: Response<{ data: FeedbackData }>) {
       const itemDate = new Date(item.date);
       return itemDate.toDateString() === filterDate.toDateString();
     });
+  }
+
+
+  if (selectedGroupId) {
+    const selectedGroup = groupSummaries.find(group => group.id === selectedGroupId);
+    if (selectedGroup) {
+      filteredFeedback = filteredFeedback.filter(item => selectedGroup.feedbackIds.includes(item.id));
+    }
   }
 
   res.status(200).json({ data: filteredFeedback });
