@@ -24,16 +24,16 @@ export type GroupSummary = {
   feedbackIds: number[];
 };
 
-export function useFeedbackQuery(filters: FilterState) {
+export function useFeedbackQuery(filters: FilterState, selectedGroupId: string | null) {
   return useQuery({
-    queryKey: ["feedback", filters],
+    queryKey: ["feedback", filters, selectedGroupId],
     queryFn: async () => {
       const response = await fetch("http://localhost:5002/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ filters }),
+        body: JSON.stringify({ filters, selectedGroupId }),
       });
 
       if (!response.ok) {

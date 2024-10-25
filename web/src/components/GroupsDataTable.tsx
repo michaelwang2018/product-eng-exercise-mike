@@ -1,5 +1,4 @@
 import cx from "classnames";
-import { useState, useMemo } from "react";
 import { GroupSummary, FeedbackData } from "../hooks";
 import { DataTable } from "./DataTable";
 
@@ -12,19 +11,19 @@ const importanceValue = {
 interface GroupsDataTableProps {
   data: GroupSummary[];
   allFeedback: FeedbackData;
+  onGroupSelect: (groupId: string) => void;
+  selectedGroupId: string | null;
 }
 
-export function GroupsDataTable({ data, allFeedback }: GroupsDataTableProps) {
-  const [selectedGroupIndex, setSelectedGroupIndex] = useState(0);
-
-  const groupFeedback = useMemo(() => {
-    const selectedGroup = data[selectedGroupIndex];
-    return allFeedback.filter(feedback => selectedGroup.feedbackIds.includes(feedback.id));
-  }, [selectedGroupIndex, data, allFeedback]);
-
-  const handleGroupClick = (index: number) => {
-    setSelectedGroupIndex(index);
+export function GroupsDataTable({ data, allFeedback, onGroupSelect, selectedGroupId }: GroupsDataTableProps) {
+  const handleGroupClick = (groupId: string) => {
+    onGroupSelect(groupId);
   };
+
+  const selectedGroup = data.find(group => group.id === selectedGroupId);
+  const groupFeedback = selectedGroup
+    ? allFeedback.filter(feedback => selectedGroup.feedbackIds.includes(feedback.id))
+    : [];
 
   return (
     <div className="hide-scroll-bar flex h-full w-full align-top">
@@ -32,13 +31,13 @@ export function GroupsDataTable({ data, allFeedback }: GroupsDataTableProps) {
         className="hide-scroll-bar h-full overflow-y-auto"
         style={{ width: 500 }}
       >
-        {data.map((group, index) => (
+        {data.map((group) => (
           <div
-            key={`grouped-feedback-${index}`}
-            onClick={() => handleGroupClick(index)}
+            key={`grouped-feedback-${group.id}`}
+            onClick={() => handleGroupClick(group.id)}
             className={cx("border-b px-6 py-4 hover:cursor-pointer", {
-              "bg-primary-action-light": selectedGroupIndex === index,
-              "hover:bg-hover-gray": selectedGroupIndex !== index,
+              "bg-primary-action-light": selectedGroupId === group.id,
+              "hover:bg-hover-gray": selectedGroupId !== group.id,
             })}
           >
             <div className="mb-2 text-base font-semibold">{group.title}</div>
