@@ -17,6 +17,7 @@
     "api",
     "web"
   ],
+  "setupFilesAfterEnv": ["./web/src/test/setup.ts"],
   "packageManager": "npm@10.8.1",
   "dependencies": {
     "@types/moment": "^2.13.0",
